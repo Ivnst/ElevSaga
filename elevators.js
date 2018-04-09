@@ -20,6 +20,12 @@
             }
             return null;
         }
+        
+        pushFreeElevator = function(floor){
+            var freeElevatorId = getFreeElevator();
+            if(freeElevatorId != null)
+                elevators[freeElevatorId].go();
+        }
 
         elevators.forEach(function(e) {    
             e.direct = "";
@@ -211,27 +217,17 @@
             f.isWaitingUp   = function() { return f.buttonStates.up   == "activated"; }
             f.isWaitingDown = function() { return f.buttonStates.down == "activated"; }
             f.isWaiting     = function() { return f.isWaitingUp() || f.isWaitingDown(); }
-
-            f.log = function(msg) {
-                console.log(msg + ": f=" + f.floorNum());
-            }
+            f.log           = function(msg) { console.log(msg + ": f=" + f.floorNum()); }
             
             f.on("up_button_pressed", function() {
                 f.log("up_button_pressed", f);
-
-                var freeElevatorId = getFreeElevator();
-                if(freeElevatorId != null)
-                    elevators[freeElevatorId].go();
+                pushFreeElevator(f);
             });
             f.on("down_button_pressed", function() {
                 f.log("down_button_pressed", f);
-
-                var freeElevatorId = getFreeElevator();
-                if(freeElevatorId != null)
-                    elevators[freeElevatorId].go();
+                pushFreeElevator(f);
             });        
         });
     },
-        update: function(dt, elevators, floors) {
-        }
+    update: function(dt, elevators, floors) { }
 }
