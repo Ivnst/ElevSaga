@@ -5,19 +5,15 @@
 
         getUpperBusyFloor = function() {
             for(var i = floors.length - 1; i > 0; i--)
-            {
                 if(floors[i].isWaiting())
                     return i;
-            }
             return null;
         }
 
         getFreeElevator = function() {
             for(var i = 0; i < elevators.length - 1; i++)
-            {
                 if(elevators[i].direct == "")
                     return i;
-            }
             return null;
         }
         
@@ -211,13 +207,13 @@
 
         });
 
-
         floors.forEach(function(f) {
 
             f.isWaitingUp   = function() { return f.buttonStates.up   == "activated"; }
             f.isWaitingDown = function() { return f.buttonStates.down == "activated"; }
             f.isWaiting     = function() { return f.isWaitingUp() || f.isWaitingDown(); }
-            f.log           = function(msg) { console.log(msg + ": f=" + f.floorNum()); }
+            f.getWaitingDir = function() { return f.isWaitingUp() ? "up" : (f.isWaitingDown() ? "down" : ""); }
+            f.log           = function(msg) { return; console.log(msg + ": f=" + f.floorNum()); }
             
             f.on("up_button_pressed", function() {
                 f.log("up_button_pressed", f);
