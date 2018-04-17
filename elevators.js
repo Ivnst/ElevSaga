@@ -17,6 +17,15 @@
             return null;
         }
         
+        getFreeElevatorAtFloor = function(floorNum, direction) {
+            for(var i = 0; i < elevators.length - 1; i++)
+                if(elevators[i].direct == direction 
+                   && elevators[i].currentFloor() == floorNum 
+                   && elevators[i].loadFactor() < 0.5)
+                    return i;
+            return null;
+        }
+        
         pushFreeElevator = function(floor){
             var freeElevatorId = getFreeElevator();
             if(freeElevatorId != null)
@@ -24,6 +33,7 @@
         }
 
         elevators.forEach(function(e) {    
+            e.id = elevators.indexOf(e);
             e.direct = "";
 
             e.log = function(msg, floorNum) {
@@ -179,22 +189,31 @@
                 var upperWaitingFloorId = getUpperBusyFloor();
 
                 var isDestination = e.getPressedFloors().indexOf(floorNum) != -1;
-                var isWaitingInTheSameDirection = (e.direct == "up" ? floors[floorNum].isWaitingUp() : floors[floorNum].isWaitingDown());
+                var isWaitingInTheSameDirection = (e.direct === floors[floorNum].getWaitingDir());
                 var currFloorIsMaxWaiting = upperWaitingFloorId <= floorNum;
                 var hasDestinations = e.getPressedFloors().length > 0;
-
-                if (isDestination || (isWaitingInTheSameDirection && e.loadFactor() < highLoadFactor)) {
+                var anotherFreeElevator = getFreeElevatorAtFloor(floorNum, e.direct);
+                
+                if (isDestination) {
                     e.goToFloor(floorNum, true);
+                    return;
+                }
+                
+                if (anotherFreeElevator == null && (isWaitingInTheSameDirection && e.loadFactor() < highLoadFactor)) {
+                    e.goToFloor(floorNum, true);
+                    return;
                 }
 
                 if(currFloorIsMaxWaiting && !hasDestinations && floors[floorNum].isWaiting())
                 {
                     e.goToFloor(floorNum, true);
+                    return;
                 }
 
                 if(currFloorIsMaxWaiting && !hasDestinations)
                 {
                     e.go();
+                    return;
                 }
             });
 
